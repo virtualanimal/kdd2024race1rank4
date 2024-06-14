@@ -10,7 +10,7 @@
 
 **Our final approach is to merge the results of the test set using the GCN model, the Xgboost machine learning model, and the llm model (ChatGLM) after fine tuning.**
 
-| Method                                                       | AUC           |
+| Method                                                       | WAUC          |
 | ------------------------------------------------------------ | ------------- |
 | **GCN**                                                      | 0.7687(test)  |
 | **Xgboost**（before using oagbert）                          | 0.7993(test)  |
@@ -56,9 +56,13 @@ The dataset can be downloaded from [BaiduPan](https://pan.baidu.com/s/1_CX50fRxo
 
   **This process may takes a lot of time, please be patinet. If you need,  we will upload our processed file later.**
 
+  #### update!!!
+
+  you can download the  processed file from [dataset](https://drive.google.com/drive/folders/1WtMWXb4qv-oKStO0oL0cNS8guQHKHvqu?usp=drive_link), and put all file in dataset acrroding to File Struct.（Due to google drive storage limitations, we are unable to upload gcn training data, if you only need to test, the data provided here is sufficient）
+
 + Pretrained Model prepare
 
-  We use three word embeddding tools(includeing [bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)、[sci-bert]([allenai/scibert_scivocab_uncased at main (huggingface.co)](https://huggingface.co/allenai/scibert_scivocab_uncased/tree/main)) and oag-bert, oag-bert can be donwload by tool cogdl(in Xgboost requirements.txt)), you should download those pretrained model and put them in `model/` directory(except oag-bert and remember change download model name to  <u>bge-small-en-v1.5</u> and <u>scibert</u> ). 
+  We use three word embeddding tools(includeing [bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)、[sci-bert]([allenai/scibert_scivocab_uncased at main (huggingface.co)](https://huggingface.co/allenai/scibert_scivocab_uncased/tree/main))  and oag-bert, oag-bert can be donwload by tool cogdl(in Xgboost requirements.txt)), you should download those pretrained model and put them in `model/` directory(except oag-bert and remember change download model name to  <u>bge-small-en-v1.5</u> and <u>scibert</u> ). 
 
 ## Run Method for [KDD Cup 2024](https://www.biendata.xyz/competition/ind_kdd_2024/)
 
@@ -67,6 +71,8 @@ We provide three Method: [GCN](https://arxiv.org/abs/1609.02907), Xgboost, and [
 For `Xgboost`,
 
 ​	Do feature engineering and train xgboost model to predict results at 10 fold
+
++ train and predict
 
 ```shell
 cd Xgboost
@@ -82,20 +88,38 @@ python predict.py
 or bash run.sh
 ```
 
++ predict
+
+  Pretrained gcn model can be downloaded from [xgb_model](https://drive.google.com/file/d/1UR9FYDsQYMQOVF3Mg0hZSNb0lDlQMIaa/view?usp=drive_link) ,and put it in `model/xgb_model`.
+
+  ```
+  python infer.py
+  ```
+
 For `GCN`,
 
 ​	Build graph relational data, train and predict results using gcn model.
 
-```shell
-export CUDA_VISIBLE_DEVICES='?'  # specify which GPU(s) to be used
-cd GCN
-# as same as Xgboost pre three command 
-#python norm_data.py
-#python encode.py
-#python get_feature.py
-python build_graph.py 
-bash train.sh #include train and predict
-```
++ train and predict
+
+  ```
+  export CUDA_VISIBLE_DEVICES='?'  # specify which GPU(s) to be used
+  cd GCN
+  # as same as Xgboost pre three command 
+  #python norm_data.py
+  #python encode.py
+  #python get_feature.py
+  python build_graph.py 
+  bash train.sh #include train and predict
+  ```
+
++ predict
+
+  Pretrained gcn model can be downloaded from (gcn_model)[https://drive.google.com/drive/folders/17Y7QhOdvkj76dCUxyOS0kyJpTg-0Vrg2?usp=drive_link] ,and put it in `model/gcn_model`.
+
+  ```
+  python predict.py
+  ```
 
 For `ChatGLM`,
 
@@ -134,7 +158,7 @@ Two fine-tuned ChatGLM checkpoint via Lora can be downloaded from  [ChatGLM-lora
 `All Model Merge`
 
 ```shell
-python merge.py 
+python merge.py --gcn_rsult your_gcn_file --ml_result your_ml_reslut --llm_result your_llm_merge_reslut
 ```
 
 ## File Struct
@@ -173,9 +197,12 @@ python merge.py
 │   ├── README.md
 │   ├── requirements.txt
 │   ├── train.py
+│   ├── predict.py
 │   └── train.sh
 ├── merge.py
 ├── model
+	├── gcn_model
+	└── xgb_model
 ├── README.md
 └── Xgboost
     ├── encode.py
@@ -184,9 +211,14 @@ python merge.py
     ├── predict.py
     ├── README.md
     ├── requirements.txt
-    └── run.sh
+    ├── run.sh
+    └── infer.py
 ```
 
 and in `dataset/`
 
 <img src="img/image-20240613143223232.png" alt="image-20240613143223232" style="zoom: 67%;" />
+
+in `dataset/graph/`
+
+![image-20240614135715220](img/image-20240614135715220.png)

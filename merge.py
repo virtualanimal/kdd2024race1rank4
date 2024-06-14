@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--gcn_rsult', default="dataset/result/gcn_result.json")
 parser.add_argument('--ml_result',default='dataset/result/xgboost_result.json')
 parser.add_argument('--llm_result',default='dataset/result/merge_llm.json')
-parser.add_argument('--merge_result',default='merge_llm.json')
+parser.add_argument('--merge_result',default='merge_all.json')
 args = parser.parse_args()
 
 # 读取第一个 JSON 文件
